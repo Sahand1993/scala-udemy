@@ -16,6 +16,8 @@ object Command {
   val TOUCH: String = "touch"
   val CD: String = "cd"
   val RM: String = "rm"
+  val ECHO: String = "echo"
+  val CAT: String = "cat"
 
   def emptyCommand: Command = new Command {
     override def apply(state: State): State = {
@@ -39,30 +41,33 @@ object Command {
     val tokens: Array[String] = input.split(" ")
 
     if (input.isEmpty || tokens.isEmpty) emptyCommand
-    else if (MKDIR.equals(tokens.head)) {
-      if (tokens.length < 2) incompleteCommand(MKDIR)
-      else new Mkdir(tokens(1))
+    else tokens(0) match {
+      case MKDIR =>
+        if (tokens.length < 2) incompleteCommand(MKDIR)
+        else new Mkdir(tokens(1))
+      case LS =>
+        if (tokens.length > 1) tooManyArguments(LS)
+        else new Ls
+      case PWD =>
+        if (tokens.length > 1) tooManyArguments(PWD)
+        else new Pwd
+      case TOUCH =>
+        if (tokens.length < 2) incompleteCommand(TOUCH)
+        else new Touch(tokens(1))
+      case CD =>
+        if (tokens.length < 2) incompleteCommand(CD)
+        else new Cd(tokens(1).split("/").toList)
+      case RM =>
+        if (tokens.length < 2) incompleteCommand(RM)
+        else new Rm(tokens(1))
+      case ECHO =>
+        if (tokens.length < 2) incompleteCommand(ECHO)
+        else new Echo(tokens.tail)
+      case CAT =>
+        if (tokens.length < 2) incompleteCommand(CAT)
+        else new Cat(tokens(1))
+      case _ =>
+        new UnknownCommand
     }
-    else if (LS.equals(tokens.head)) {
-      if (tokens.length > 1) tooManyArguments(LS)
-      else new Ls
-    }
-    else if (PWD.equals(tokens.head)) {
-      if (tokens.length > 1) tooManyArguments(PWD)
-      else new Pwd
-    }
-    else if (TOUCH.equals(tokens.head)) {
-      if (tokens.length < 2) incompleteCommand(TOUCH)
-      else new Touch(tokens(1))
-    }
-    else if (CD.equals(tokens.head)) {
-      if (tokens.length < 2) incompleteCommand(CD)
-      else new Cd(tokens(1).split("/").toList)
-    }
-    else if (RM.equals(tokens.head)) {
-      if (tokens.length < 2) incompleteCommand(RM)
-      else new Rm(tokens(1))
-    }
-    else new UnknownCommand
   }
 }

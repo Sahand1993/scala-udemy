@@ -1,6 +1,6 @@
 package com.rtjvm.scala.oop.commands
 
-import com.rtjvm.scala.oop.files.{DirEntry, Directory}
+import com.rtjvm.scala.oop.files.Directory
 import com.rtjvm.scala.oop.filesystem.State
 
 class Rm(name: String) extends Command {

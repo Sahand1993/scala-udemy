@@ -15,7 +15,9 @@ class Directory(override val parentPath: String, override val name: String, val 
   def findDescendant(path: List[String]): DirEntry = {
     if (path.isEmpty) this
     else {
-      findEntry(path.head).asDirectory.findDescendant(path.tail)
+      val entry = findEntry(path.head)
+      if (entry != null) entry.asDirectory.findDescendant(path.tail)
+      else null
     }
   }
 
@@ -51,7 +53,10 @@ class Directory(override val parentPath: String, override val name: String, val 
         }
       }
     }
-    new Directory(parentPath, name, replaceContent(List()))
+    if (!contents.map(e => e.name).contains(oldName))
+      new Directory(parentPath, name, contents :+ newEntry)
+    else
+      new Directory(parentPath, name, replaceContent(List()))
   }
 
   def hisReplaceEntry(entryName: String, newEntry: DirEntry): Directory =
