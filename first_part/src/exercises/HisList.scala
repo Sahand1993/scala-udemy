@@ -31,11 +31,7 @@ abstract class HisList[+A] {
 
   def sort(compare: (A, A) => Int): HisList[A]
 
-
   def zipWith[B, C](otherList: HisList[B], f: (A, B) => C): HisList[C]
-
-  def fold[B](startValue: B): ((A, A) => B) => B
-
 }
 
 case object Empty extends HisList[Nothing] {
@@ -70,9 +66,6 @@ case object Empty extends HisList[Nothing] {
     if (!otherList.isEmpty) throw new RuntimeException("Lists had different lengths")
     else Empty
   }
-
-  override def fold[B](startValue: B): ((Nothing, Nothing) => B) => B = ???
-
 }
 
 case class Cons[+A](head: A, tail: HisList[A]) extends HisList[A] {
@@ -138,15 +131,7 @@ case class Cons[+A](head: A, tail: HisList[A]) extends HisList[A] {
     else new Cons(f(head, otherList.head), tail.zipWith(otherList.tail, f))
   }
 
-  override def fold(startValue: A): ((A, A) => A) => A = {
-    def helper(f: (A, A) => A): A = {
-      def inner(accum: A, restOfList: HisList[A]): A = {
-        inner(f(accum, restOfList.head), restOfList.tail)
-      }
-      inner(startValue, this)
-    }
-    helper
-  }
+
 
 }
 
