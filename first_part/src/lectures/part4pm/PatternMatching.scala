@@ -31,6 +31,7 @@ object PatternMatching extends App {
     1. cases are matched in order
     2. what if no cases match? Error will be thrown.
     3. Type of pattern match expression? The unification of all case return types
+    4. PM works really well with case classes. Because they have the extractor pattern out of the box
    */
 
   // PM on sealed hierarchies
@@ -43,4 +44,36 @@ object PatternMatching extends App {
     case Dog(someBreed) => println(s"Matched a dog of the $someBreed breed")
   }
 
+  // don't use patterns on everything
+
+  /*
+    Excercise
+    simple function that uses PM
+    takes an Expr => human readable form
+
+    for example:
+    Sum(Number(2), Number(3)) => "2 + 2"
+    Sum(Number(2), Number(3), Number(4)) => "2 + 3 + 4"
+    Prod(Sum(Number(2), Number(1)), Number(3)) => (2 + 1) * 3
+    Sum(Prod(Number(2), Number(1)), Number(3)) => 2 * 1 + 3
+   */
+  trait Expr
+  case class Number(n: Int) extends Expr
+  case class Sum(e1: Expr, e2: Expr) extends Expr
+  case class Prod(e1: Expr, e2: Expr) extends Expr
+
+  def show(expr: Expr): String = expr match {
+      case Number(n) => n + ""
+      case Prod(e1, e2) => {
+        def maybeShowParentheses(e: Expr) = e match {
+          case Sum(_, _) => "(" + show(e1) + ")"
+          case _ => show(e1)
+        }
+        maybeShowParentheses(e1) + " * " + maybeShowParentheses(e2)
+      }
+      case Sum(e1, e2) => show(e1) + " + " + show(e2)
+      case _ => ""
+    }
+
+  println(show(Prod(Sum(Number(2), Number(1)), Sum(Number(3), Number(4)))))
 }
